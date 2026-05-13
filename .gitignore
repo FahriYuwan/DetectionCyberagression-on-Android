@@ -1,0 +1,45 @@
+# --- Project Specific ---
+.gradle/
+build/
+app/build/
+.kotlin/
+local.properties
+java_pid*.hprof
+*.log
+
+# --- Android Studio / IntelliJ ---
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+.externalNativeBuild/
+.cxx/
+
+# --- Keystore & Secrets ---
+# Jangan pernah upload file kunci aplikasi (release) ke GitHub
+*.jks
+*.keystore
+*.p12
+google-services.json
+
+# --- OS Generated ---
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# --- Experiments & Data ---
+# Mengabaikan hasil ekspor eksperimen agar tidak mengotori repo
+*.csv
+*.xlsx
+captures/
+
+# --- Large Files (Model AI) ---
+# PERHATIAN: Jika Anda tidak menggunakan Git LFS, file .onnx
+# (terutama FP32 ~400MB) akan membuat commit sangat berat atau gagal.
+# Aktifkan baris di bawah ini jika Anda ingin mengabaikan model di Git:
+# app/src/main/assets/*.onnx

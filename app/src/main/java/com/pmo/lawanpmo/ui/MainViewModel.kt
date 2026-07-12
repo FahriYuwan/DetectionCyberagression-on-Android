@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.pmo.lawanpmo.export.ExportHelper
 import com.pmo.lawanpmo.export.ExportHelper.RunResult
 import com.pmo.lawanpmo.ml.OnnxInferenceEngine
+import com.pmo.lawanpmo.preprocessing.TextPreprocessor
 import com.pmo.lawanpmo.tokenizer.WordPieceTokenizer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -36,6 +37,7 @@ class MainViewModel : ViewModel() {
     private var engineQat : OnnxInferenceEngine? = null
     private var engineFp32 : OnnxInferenceEngine? = null
     private var tokenizer : WordPieceTokenizer?  = null
+    private var preprocessor : TextPreprocessor?  = null
 
     fun selectModel(type: OnnxInferenceEngine.ModelType) {
         _selectedModel.value = type
@@ -46,6 +48,7 @@ class MainViewModel : ViewModel() {
         if (tokenizer != null) return
         viewModelScope.launch(Dispatchers.Default) {
             tokenizer = WordPieceTokenizer(context)
+            preprocessor = TextPreprocessor.getInstance(context)
         }
     }
 
@@ -56,7 +59,8 @@ class MainViewModel : ViewModel() {
         _uiState.value = UiState.Loading("Memproses...")
         viewModelScope.launch {
             val result = withContext(Dispatchers.Default) {
-                val enc    = tokenizer!!.encode(text)
+                val cleanText = preprocessor!!.clean(text)
+                val enc    = tokenizer!!.encode(cleanText)
                 val engine = getEngine(context, _selectedModel.value)
                 engine.predict(enc.inputIds, enc.attentionMask)
             }
@@ -78,7 +82,8 @@ class MainViewModel : ViewModel() {
             val runs = mutableListOf<RunResult>()
 
             withContext(Dispatchers.Default) {
-                val enc    = tokenizer!!.encode(text)
+                val cleanText = preprocessor!!.clean(text)
+                val enc    = tokenizer!!.encode(cleanText)
                 val engine = getEngine(context, _selectedModel.value)
 
                 // ── Warm-up (tidak disimpan) ───────────────────────────────
